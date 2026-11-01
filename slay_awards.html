@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLAY AWARDS 2026</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slayBlack: '#0a0a0a',
+                        slayDark: '#121212',
+                        slayCard: '#181818',
+                        slayOrange: '#ff6600',
+                        slayGlow: '#ff8800',
+                        slayAmber: '#ffaa00'
+                    },
+                    fontFamily: {
+                        sans: ['Impact', 'Trebuchet MS', 'sans-serif'],
+                        body: ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 2s infinite alternate',
+                        'float': 'float 4s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%': { transform: 'scale(1)', filter: 'drop-shadow(0 0 15px rgba(255, 102, 0, 0.6))' },
+                            '100%': { transform: 'scale(1.08)', filter: 'drop-shadow(0 0 35px rgba(255, 136, 0, 0.95))' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-8px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #ffffff;
+            font-family: 'Inter', system-ui, sans-serif;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ff6600;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff8800;
+        }
+
+        .text-glow {
+            text-shadow: 0 0 12px #ff6600, 0 0 25px #ff6600, 0 0 45px #ff8800;
+        }
+
+        .box-glow {
+            box-shadow: 0 0 20px rgba(255, 102, 0, 0.25);
+        }
+
+        .box-glow-strong {
+            box-shadow: 0 0 35px rgba(255, 102, 0, 0.5);
+        }
+
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        #logoContainer {
+            transition: all 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .logo-centered {
+            position: fixed;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1.3);
+            z-index: 50;
+        }
+
+        .logo-header {
+            position: relative;
+            top: 0;
+            left: 0;
+            transform: translate(0, 0) scale(0.65);
+            z-index: 30;
+        }
+
+        /* GM Sponsor Badge Transitions */
+        #gmBadge {
+            transition: all 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .gm-centered {
+            position: fixed;
+            top: 66%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1.1);
+            z-index: 55;
+        }
+
+        .gm-topright {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            transform: translate(0, 0) scale(0.9);
+            z-index: 60;
+        }
+    </style>
+</head>
+<body class="bg-slayBlack text-white min-h-screen relative flex flex-col justify-between overflow-x-hidden">
+
+    <!-- Particle Canvas for ambient sparks -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- TOP BROADCAST BANNER -->
+    <div id="broadcastBanner" class="fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-slayOrange via-amber-500 to-slayOrange text-black font-extrabold text-xs md:text-sm py-2 px-4 text-center tracking-wider uppercase shadow-[0_0_20px_rgba(255,102,0,0.8)] flex items-center justify-center gap-2">
+        <i class="fa-solid fa-broadcast-tower animate-pulse"></i>
+        <span>Трансляция в 15:00 2 ноября</span>
+        <i class="fa-solid fa-broadcast-tower animate-pulse"></i>
+    </div>
+
+    <!-- FULLSCREEN SPLASH OVERLAY -->
+    <div id="splashOverlay" class="fixed inset-0 z-40 flex flex-col justify-between items-center cursor-pointer p-6 bg-slayBlack/95 backdrop-blur-md transition-opacity duration-1000">
+        <div></div>
+
+        <div class="text-center z-50 mb-16 animate-bounce">
+            <div class="inline-flex items-center gap-3 px-6 py-3.5 rounded-full bg-slayDark border border-slayOrange/50 box-glow text-slayOrange font-bold text-base md:text-lg tracking-wider">
+                <i class="fa-solid fa-fire text-slayOrange animate-pulse"></i>
+                <span>НАЖМИ В ЛЮБОЕ МЕСТО, ЧТОБЫ ОТКРЫТЬ</span>
+                <i class="fa-solid fa-fire text-slayOrange animate-pulse"></i>
+            </div>
+        </div>
+
+        <div></div>
+    </div>
+
+    <!-- PULSING LOGO SLAY -->
+    <div id="logoContainer" class="logo-centered pointer-events-none">
+        <div id="mainLogo" class="flex flex-col items-center justify-center">
+            <div class="flex items-center gap-3 mb-1 text-slayOrange text-3xl md:text-5xl opacity-90">
+                <i class="fa-solid fa-crown text-slayAmber"></i>
+            </div>
+
+            <h1 class="font-sans font-black text-8xl md:text-9xl tracking-widest text-transparent bg-clip-text bg-gradient-to-b from-orange-400 via-slayOrange to-orange-800 animate-pulse-glow filter drop-shadow-[0_0_30px_rgba(255,102,0,0.9)] select-none">
+                SLAY
+            </h1>
+            <p class="font-mono text-xs md:text-sm tracking-[0.5em] text-slayOrange uppercase mt-1 font-bold">
+                ★ AWARDS 2026 ★
+            </p>
+        </div>
+    </div>
+
+    <!-- GM SPONSOR CAPSULE BADGE -->
+    <div id="gmBadge" class="gm-centered pointer-events-none">
+        <div class="flex items-center bg-black border-2 border-slayOrange/60 rounded-full pl-5 pr-1.5 py-1.5 shadow-[0_0_20px_rgba(255,102,0,0.4)]">
+            <span class="font-sans font-black text-xl md:text-2xl text-white tracking-widest mr-4">GM</span>
+            <div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gradient-to-r from-slayOrange to-amber-500 shadow-[0_0_10px_#ff6600]"></div>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTENT -->
+    <div id="mainContent" class="opacity-0 pointer-events-none transition-opacity duration-1000 flex flex-col min-h-screen z-20 pt-8">
+        
+        <!-- HEADER -->
+        <header class="sticky top-8 z-30 bg-slayBlack/90 backdrop-blur-md border-b border-slayOrange/30 px-4 md:px-12 py-3 flex items-center justify-between">
+            <div class="w-36 md:w-48 h-12 flex items-center" id="headerLogoAnchor">
+                <!-- Logo moves here dynamically -->
+            </div>
+
+            <nav class="flex items-center gap-4 md:gap-8 font-semibold text-xs md:text-sm uppercase tracking-wider mr-24 md:mr-32">
+                <a href="#welcome" class="text-gray-300 hover:text-slayOrange transition-colors">Главная</a>
+                <a href="#nominations" class="text-gray-300 hover:text-slayOrange transition-colors">Номинации</a>
+                <a href="#leaderboard" class="text-gray-300 hover:text-slayOrange transition-colors">Лидерборд</a>
+            </nav>
+        </header>
+
+        <!-- HERO SECTION -->
+        <section id="welcome" class="relative py-16 md:py-24 px-4 text-center flex flex-col items-center justify-center min-h-[45vh]">
+            <h2 class="font-sans text-4xl md:text-7xl font-extrabold uppercase tracking-tight text-white mb-4">
+                ДОБРО ПОЖАЛОВАТЬ В <span class="text-transparent bg-clip-text bg-gradient-to-r from-slayOrange to-slayAmber text-glow">SLAY</span>
+            </h2>
+            <p class="max-w-2xl text-gray-400 text-sm md:text-base mb-8 font-light">
+                Голосуй за своих фаворитов во всех 17 номинациях премии! Выбирай лучшего кандидата в каждой категории.
+            </p>
+
+            <a href="#nominations" class="px-8 py-3.5 rounded-xl bg-gradient-to-r from-slayOrange to-orange-600 hover:from-orange-500 hover:to-slayOrange text-black font-extrabold tracking-wider uppercase transition-all box-glow-strong hover:scale-105 inline-flex items-center gap-2">
+                <i class="fa-solid fa-check-to-slot"></i> Отдать свой голос
+            </a>
+        </section>
+
+        <!-- NOMINATIONS SECTION -->
+        <section id="nominations" class="py-16 px-4 md:px-12 max-w-7xl mx-auto w-full">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 border-b border-slayOrange/30 pb-4 gap-4">
+                <div>
+                    <h3 class="font-sans text-3xl md:text-5xl font-extrabold uppercase text-white flex items-center gap-3">
+                        <i class="fa-solid fa-trophy text-slayOrange"></i> Все Номинации 2026
+                    </h3>
+                    <p class="text-gray-400 text-sm mt-1">Выберите своего победителя в каждой категории ниже</p>
+                </div>
+                <div id="votedCountBadge" class="self-start md:self-auto bg-slayDark border border-slayOrange/50 px-4 py-2 rounded-xl text-xs font-mono text-slayOrange">
+                    Проголосовано: <span id="votedNum" class="font-bold text-white">0</span> / 17
+                </div>
+            </div>
+
+            <!-- Grid of 17 Interactive Nominations -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="nominationsGrid">
+                <!-- Cards dynamically populated by JS -->
+            </div>
+        </section>
+
+        <!-- LEADERBOARD / STATS SECTION -->
+        <section id="leaderboard" class="py-16 px-4 md:px-12 max-w-5xl mx-auto w-full">
+            <h3 class="font-sans text-3xl md:text-5xl font-extrabold uppercase text-center mb-10 text-white">
+                Топ Претендентов <span class="text-slayOrange">SLAY</span>
+            </h3>
+
+            <div class="bg-slayCard rounded-2xl border border-slayOrange/30 overflow-hidden box-glow">
+                <div class="p-4 bg-slayOrange/10 border-b border-slayOrange/30 grid grid-cols-12 font-bold text-slayOrange text-xs md:text-sm">
+                    <span class="col-span-2 md:col-span-1 text-center">#</span>
+                    <span class="col-span-6 md:col-span-7">Имя / Участник</span>
+                    <span class="col-span-4 md:col-span-4 text-right">Статус / Номинация 🔥</span>
+                </div>
+                <div class="divide-y divide-gray-800" id="leaderboardList">
+                    <!-- Dynamic List -->
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="mt-auto bg-slayDark border-t border-slayOrange/30 py-8 px-4 text-center relative">
+            <div class="max-w-4xl mx-auto flex flex-col items-center gap-3">
+                <div class="flex items-center gap-2 text-slayOrange text-xl">
+                    <span class="font-sans font-bold tracking-widest text-white text-base">SLAY AWARDS 2026</span>
+                </div>
+                <p class="text-gray-500 text-xs">
+                    Официальный сайт голосования премии SLAY • Все права защищены
+                </p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- NOTIFICATION TOAST -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none bg-slayDark border-2 border-slayOrange text-white px-6 py-4 rounded-xl shadow-[0_0_25px_rgba(255,102,0,0.6)] flex items-center gap-3">
+        <i class="fa-solid fa-circle-check text-slayOrange text-xl"></i>
+        <span id="toastMsg" class="font-medium text-sm">Ваш голос принят!</span>
+    </div>
+
+    <script>
+        const nominationsData = [
+            { id: 1, title: "SLAY KING", icon: "fa-crown", contenders: ["sasavot", "5opka", "Bratishkinoff", "Buster"] },
+            { id: 2, title: "SLAY QUEEN", icon: "fa-chess-queen", contenders: ["MorpheYa", "GENSYXA", "Fruktozka", "Gaechka"] },
+            { id: 3, title: "Dota-стример", icon: "fa-gamepad", contenders: ["rostislav_999", "DangerLyoha", "Korya"] },
+            { id: 4, title: "CS-стример", icon: "fa-crosshair", contenders: ["StRoGo", "Leva2k", "Koreshzy"] },
+            { id: 5, title: "Minecraft-стример", icon: "fa-cube", contenders: ["5opka", "MellSher", "Deepins"] },
+            { id: 6, title: "Multigaming-стример", icon: "fa-headset", contenders: ["Bratishkinoff", "Buster", "Deepins"] },
+            { id: 7, title: "IRL-стример", icon: "fa-video", contenders: ["anarabdullaev", "rostislav_999", "Koreshzy"] },
+            { id: 8, title: "Прорыв года", icon: "fa-bolt", contenders: ["Deepins", "anarabdullaev", "MellSher"] },
+            { id: 9, title: "Проект года", icon: "fa-tv", contenders: ["Buster", "5opka", "Bratishkinoff"] },
+            { id: 10, title: "Легенда Твича", icon: "fa-dragon", contenders: ["Bratishkinoff", "Buster", "5opka"] },
+            { id: 11, title: "Харизма года", icon: "fa-fire", contenders: ["Koreshzy", "DangerLyoha", "Korya"] },
+            { id: 12, title: "Стиль года", icon: "fa-shirt", contenders: ["GENSYXA", "Deepins", "MorpheYa"] },
+            { id: 13, title: "Аудитория года", icon: "fa-users", contenders: ["5opka", "Bratishkinoff", "sasavot"] },
+            { id: 14, title: "Человек-мем года", icon: "fa-face-laugh-wink", contenders: ["DangerLyoha", "rostislav_999", "Korya"] },
+            { id: 15, title: "Трек года", icon: "fa-music", contenders: ["Akyuliych & Молодой Платон — «Говорят»", "5opka & MellSher — «HEAVY METAL 3»", "Exile", "STOPBAN", "Frame Tamer"] },
+            { id: 16, title: "Пара года", icon: "fa-heart", contenders: ["GENSYXA & Toxi$", "GENSYXA & Evelone", "GENSYXA & StRoGo", "GENSYXA & desout"] },
+            { id: 17, title: "Завоз года / Ностальгия", icon: "fa-record-vinyl", contenders: ["5opka & MellSher — «XXL»", "Exile, STOPBAN & DILBLIN — «MiMiMaMaMu»", "Exile & Столяров — «Миллион просмотров»", "ВШК — «Твичхаус»", "Tenderlybae", "Buster", "mzlff", "DK", "Lida"] }
+        ];
+
+        const leaderboardData = [
+            { rank: 1, name: "5opka", title: "Майнкрафт & Саб-файл" },
+            { rank: 2, name: "Bratishkinoff", title: "89 SQUAD / Легенда Твича" },
+            { rank: 3, name: "sasavot", title: "Действующий SLAY KING" },
+            { rank: 4, name: "MorpheYa", title: "Претендент SLAY QUEEN" },
+            { rank: 5, name: "rostislav_999", title: "Dota 2 / Человек-мем" },
+            { rank: 6, name: "Buster", title: "Проект года (Ивенты)" }
+        ];
+
+        let userVotes = {};
+
+        // Canvas ambient animation
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height + canvas.height;
+                this.size = Math.random() * 2.5 + 1;
+                this.speedY = Math.random() * 1.2 + 0.4;
+                this.speedX = (Math.random() - 0.5) * 0.6;
+                this.opacity = Math.random() * 0.6 + 0.2;
+            }
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                this.opacity -= 0.0015;
+                if (this.y < -10 || this.opacity <= 0) {
+                    this.reset();
+                    this.y = canvas.height + 10;
+                }
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = '#ff6600';
+                ctx.globalAlpha = this.opacity;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = Math.floor(window.innerWidth / 18);
+            for (let i = 0; i < count; i++) particles.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateParticles);
+        }
+
+        // OPEN WEBSITE TRANSITION & GM BADGE MOVE
+        let isOpened = false;
+        function openWebsite() {
+            if (isOpened) return;
+            isOpened = true;
+
+            const splash = document.getElementById('splashOverlay');
+            const logoContainer = document.getElementById('logoContainer');
+            const gmBadge = document.getElementById('gmBadge');
+            const mainContent = document.getElementById('mainContent');
+
+            splash.style.opacity = '0';
+            setTimeout(() => { splash.style.display = 'none'; }, 1000);
+
+            logoContainer.classList.remove('logo-centered');
+            logoContainer.classList.add('logo-header');
+
+            gmBadge.classList.remove('gm-centered');
+            gmBadge.classList.add('gm-topright');
+
+            setTimeout(() => {
+                mainContent.classList.remove('opacity-0', 'pointer-events-none');
+                mainContent.classList.add('opacity-100');
+            }, 500);
+        }
+
+        // Render cards with clean vote selection
+        function renderNominations() {
+            const grid = document.getElementById('nominationsGrid');
+            const votedCount = Object.keys(userVotes).length;
+            document.getElementById('votedNum').innerText = votedCount;
+
+            grid.innerHTML = nominationsData.map(nom => {
+                const userChoice = userVotes[nom.id];
+
+                return `
+                <div class="bg-slayCard rounded-2xl p-5 border ${userChoice ? 'border-slayOrange shadow-[0_0_20px_rgba(255,102,0,0.3)]' : 'border-slayOrange/20 hover:border-slayOrange/50'} transition-all duration-300 box-glow flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-10 h-10 rounded-xl bg-slayOrange/10 border border-slayOrange/40 flex items-center justify-center text-slayOrange text-lg group-hover:scale-110 transition-transform">
+                                <i class="fa-solid ${nom.icon}"></i>
+                            </span>
+                            <span class="text-[10px] font-mono ${userChoice ? 'text-black bg-slayOrange font-bold' : 'text-slayOrange bg-slayOrange/20'} px-2.5 py-1 rounded-full">
+                                ${userChoice ? 'ГОЛОС УЧТЁН ✓' : `#0${nom.id}`}
+                            </span>
+                        </div>
+                        <h4 class="font-sans text-xl font-bold text-white mb-4 group-hover:text-slayOrange transition-colors">${nom.title}</h4>
+
+                        <div class="space-y-2.5 mb-2">
+                            ${nom.contenders.map(c => {
+                                const isVoted = userChoice === c;
+
+                                return `
+                                <div onclick="castVote(${nom.id}, '${c.replace(/'/g, "\\'")}')" 
+                                     class="relative overflow-hidden cursor-pointer p-3.5 rounded-xl border transition-all ${isVoted ? 'bg-slayOrange/20 border-slayOrange text-white shadow-[0_0_15px_rgba(255,102,0,0.4)] font-bold' : 'bg-slayDark/90 border-gray-800 hover:border-slayOrange/40 text-gray-300'}">
+                                    
+                                    <div class="relative z-10 flex items-center justify-between">
+                                        <div class="text-sm flex items-center gap-2">
+                                            ${isVoted ? '<i class="fa-solid fa-circle-check text-slayOrange text-sm"></i>' : ''}
+                                            <span>${c}</span>
+                                        </div>
+
+                                        <div>
+                                            ${isVoted ? `
+                                                <span class="text-xs font-mono font-bold text-slayOrange bg-slayOrange/20 px-2 py-0.5 rounded">ВЫБРАНО</span>
+                                            ` : `
+                                                <button class="px-3 py-1 rounded-lg bg-slayOrange/10 hover:bg-slayOrange hover:text-black border border-slayOrange/40 text-slayOrange font-bold text-xs uppercase transition-all">
+                                                    Голос
+                                                </button>
+                                            `}
+                                        </div>
+                                    </div>
+                                </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function castVote(nomId, contenderName) {
+            userVotes[nomId] = contenderName;
+            renderNominations();
+            showToast(`Принят голос: ${contenderName}`);
+        }
+
+        function renderLeaderboard() {
+            const container = document.getElementById('leaderboardList');
+            container.innerHTML = leaderboardData.map(item => `
+                <div class="p-4 grid grid-cols-12 items-center hover:bg-slayOrange/5 transition-colors">
+                    <div class="col-span-2 md:col-span-1 text-center font-bold ${item.rank === 1 ? 'text-slayAmber text-base' : 'text-gray-400 text-sm'}">
+                        ${item.rank === 1 ? '<i class="fa-solid fa-crown text-slayAmber"></i>' : `#${item.rank}`}
+                    </div>
+                    <div class="col-span-6 md:col-span-7 font-bold text-white text-sm md:text-base">
+                        ${item.name}
+                    </div>
+                    <div class="col-span-4 md:col-span-4 text-right text-xs md:text-sm text-slayOrange font-medium">
+                        ${item.title}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = message;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 2500);
+        }
+
+        document.getElementById('splashOverlay').addEventListener('click', openWebsite);
+
+        window.onload = function () {
+            initParticles();
+            animateParticles();
+            renderNominations();
+            renderLeaderboard();
+        };
+    </script>
+</body>
+</html>
